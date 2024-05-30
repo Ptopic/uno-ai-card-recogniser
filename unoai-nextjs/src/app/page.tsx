@@ -2,7 +2,7 @@
 
 import uploadImage from '@api/unoai/unoai';
 import Image from 'next/image';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Webcam from 'react-webcam';
 
 interface IPrediction {
@@ -193,6 +193,17 @@ const Home = () => {
 	const addToFinalScore = () => {
 		setScore(score + tempScore);
 	};
+
+	useEffect(() => {
+		const handleResize = () => {
+			setVideoWidth(window.innerWidth);
+			setVideoHeight(window.innerHeight);
+		};
+
+		window.addEventListener('resize', handleResize);
+
+		return () => window.removeEventListener('resize', handleResize);
+	}, []);
 
 	return (
 		<main>
