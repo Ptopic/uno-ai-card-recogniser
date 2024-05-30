@@ -13,6 +13,9 @@ interface IPrediction {
 
 const Home = () => {
 	const webcamRef = useRef<Webcam>(null);
+	const canvasRef = useRef<HTMLCanvasElement>(null);
+
+	const [stopDetecting, setStopDetecting] = useState(false);
 
 	const [videoWidth, setVideoWidth] = useState(960);
 	const [videoHeight, setVideoHeight] = useState(640);
@@ -21,33 +24,6 @@ const Home = () => {
 	const [score, setScore] = useState(0);
 
 	const [predictions, setPredictions] = useState<IPrediction[]>([]);
-
-	const videoConstraints = {
-		height: 1080,
-		width: 1000,
-		maxWidth: '100vw',
-		facingMode: 'environment',
-	};
-
-	async function predictionFunction() {
-		try {
-			let imageSrc;
-			if (webcamRef.current) {
-				imageSrc = webcamRef.current.getScreenshot();
-			}
-
-			const res = await uploadImage(
-				imageSrc ? imageSrc.split(';base64,')[1] : ''
-			);
-
-			const predictions = res.result;
-			drawBoundingBoxes(predictions);
-		} catch (error) {
-			console.log(error);
-		}
-
-		setTimeout(() => predictionFunction(), 150);
-	}
 
 	const cardObjects = [
 		{
@@ -127,8 +103,49 @@ const Home = () => {
 		},
 	];
 
+	const videoConstraints = {
+		height: videoHeight,
+		width: videoWidth,
+		facingMode: 'environment',
+	};
+
+	const startDetecting = async () => {
+		setStopDetecting(false);
+		predictionFunction();
+	};
+
+	async function predictionFunction() {
+		if (stopDetecting) return;
+		try {
+			let imageSrc;
+			if (webcamRef.current) {
+				imageSrc = webcamRef.current.getScreenshot();
+			}
+
+			const res = await uploadImage(
+				imageSrc ? imageSrc.split(';base64,')[1] : ''
+			);
+
+			const predictions = res.result;
+			drawBoundingBoxes(predictions);
+		} catch (error) {
+			console.log(error);
+		}
+
+		setTimeout(() => predictionFunction(), 150);
+	}
+
 	function drawBoundingBoxes(predictions: any) {
-		const cnvs = document.getElementById('myCanvas') as HTMLCanvasElement;
+		// const cnvs = document.querySelector(
+		// 	'#video-container > #myCanvas'
+		// ) as HTMLCanvasElement;
+
+		let cnvs;
+		if (canvasRef.current) {
+			cnvs = canvasRef.current;
+		}
+
+		if (!cnvs) return;
 		const ctx = cnvs.getContext('2d');
 
 		if (!ctx) return;
@@ -179,32 +196,43 @@ const Home = () => {
 
 	return (
 		<main>
-			<div className="flex">
-				<div className="z-50 absolute top-10">
-					<canvas
-						id="myCanvas"
-						width={videoWidth}
-						height={videoHeight}
-						style={{ backgroundColor: 'transparent' }}
-					/>
-				</div>
-				<div className="absolute top-10">
-					<Webcam
-						audio={false}
-						id="img"
-						ref={webcamRef}
-						screenshotQuality={1}
-						screenshotFormat="image/jpeg"
-						videoConstraints={videoConstraints}
-					/>
-				</div>
+			<div className="h-fit w-fit flex gap-4">
 				<button
-					className="absolute top-0 left-0 z-40 bg-white text-black"
-					onClick={() => predictionFunction()}
+					className="bg-white text-black"
+					onClick={() => startDetecting()}
 				>
 					Start detection
 				</button>
-				<div className="w-[400px] h-fit absolute right-20 top-10 flex flex-col gap-4">
+				<button
+					className="bg-white text-black"
+					onClick={() => setStopDetecting(true)}
+				>
+					Stop detection
+				</button>
+			</div>
+			<div className="flex h-screen w-full flex-col lg:flex-row items-center lg:items-start lg:justify-between gap-4">
+				<div className="w-fit h-fit">
+					<div className="absolute top-6 left-0 z-50 w-fit h-fit">
+						<canvas
+							ref={canvasRef}
+							id="myCanvas"
+							width={videoWidth}
+							height={videoHeight}
+							style={{ backgroundColor: 'transparent' }}
+						/>
+					</div>
+					<div className="relative top-0 left-0 w-fit h-fit">
+						<Webcam
+							audio={false}
+							id="img"
+							ref={webcamRef}
+							screenshotQuality={1}
+							screenshotFormat="image/jpeg"
+							videoConstraints={videoConstraints}
+						/>
+					</div>
+				</div>
+				<div className="w-[400px] h-fit flex flex-col gap-4 lg:pr-10">
 					<h1 className="text-xl">
 						Score: <span className="font-bold">{score}</span>
 					</h1>
