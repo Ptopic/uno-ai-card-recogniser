@@ -88,7 +88,7 @@ const Home = () => {
 		{
 			name: '7',
 			points: 7,
-			color: 'yellow',
+			color: 'red',
 		},
 		{
 			name: '8',
