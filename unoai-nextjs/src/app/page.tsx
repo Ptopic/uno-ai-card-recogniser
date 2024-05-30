@@ -46,7 +46,7 @@ const Home = () => {
 			console.log(error);
 		}
 
-		setTimeout(() => predictionFunction(), 500);
+		setTimeout(() => predictionFunction(), 150);
 	}
 
 	const cardObjects = [
