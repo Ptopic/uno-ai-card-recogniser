@@ -1,0 +1,5 @@
+python detect.py --weights runs/train/yolov5s_results9/weights/best.pt --img 416 --conf 0.4 --source ./tests
+
+With converted tensorflow model - Define labels
+
+python detect.py --weights best_saved_model/saved_model.pb --data data.yaml --source ./tests
