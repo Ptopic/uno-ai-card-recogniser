@@ -195,6 +195,7 @@ const Home = () => {
 	};
 
 	useEffect(() => {
+		if (videoWidth === window.innerWidth) return;
 		const handleResize = () => {
 			setVideoWidth(window.innerWidth);
 			setVideoHeight(window.innerHeight);
