@@ -59,7 +59,7 @@ const Home = () => {
 		{
 			name: '6',
 			points: 6,
-			color: 'red',
+			color: 'yellow',
 		},
 		{
 			name: '7',
