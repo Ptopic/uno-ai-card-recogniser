@@ -17,8 +17,8 @@ const Home = () => {
 
 	const [isDetecting, setIsDetecting] = useState(false);
 
-	const [videoWidth, setVideoWidth] = useState(0);
-	const [videoHeight, setVideoHeight] = useState(0);
+	const [videoWidth, setVideoWidth] = useState(window.innerWidth);
+	const [videoHeight, setVideoHeight] = useState(window.innerHeight);
 
 	const [tempScore, setTempScore] = useState(0);
 	const [score, setScore] = useState(0);
@@ -203,7 +203,7 @@ const Home = () => {
 
 	return (
 		<main className="flex flex-col gap-4">
-			<div className="h-fit w-fit flex gap-4 pt-4 pl-4">
+			<div className="h-fit w-full sm:justify-start justify-between flex gap-4 pt-4 px-4">
 				<button
 					className="bg-green500 text-black p-4"
 					onClick={() => setIsDetecting(true)}
@@ -216,7 +216,6 @@ const Home = () => {
 				>
 					Stop detecting
 				</button>
-				{isDetecting && <p>Detecting...</p>}
 			</div>
 			<div className="flex h-screen w-full flex-col lg:flex-row items-center lg:items-start lg:justify-between gap-4">
 				<div className="w-fit h-fit">
@@ -240,7 +239,12 @@ const Home = () => {
 						/>
 					</div>
 				</div>
-				<div className="w-[400px] h-fit flex flex-col gap-4 lg:pr-10">
+				<div className="w-full lg:w-[400px] px-4 h-fit flex flex-col gap-4 lg:px-10">
+					{isDetecting && (
+						<p className="bg-green500 text-black p-4 rounded-md text-lg">
+							Detecting...
+						</p>
+					)}
 					<h1 className="text-xl">
 						Score: <span className="font-bold">{score}</span>
 					</h1>
