@@ -252,7 +252,7 @@ const Home = () => {
 						/>
 					</div>
 				</div>
-				<div className="relative top-0 left-0 right-0 w-fit h-fit z-50">
+				<div className="relative top-0 left-0 lg:w-fit right-0 w-full h-fit z-50">
 					<div className="w-full lg:w-[400px] px-4 h-fit flex flex-col gap-4 lg:px-10">
 						{isDetecting && (
 							<p className="bg-green500 text-black p-4 rounded-md text-lg">
