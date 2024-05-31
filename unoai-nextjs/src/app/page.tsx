@@ -15,10 +15,10 @@ const Home = () => {
 	const webcamRef = useRef<Webcam>(null);
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 
-	const [stopDetecting, setStopDetecting] = useState(false);
+	const [isDetecting, setIsDetecting] = useState(false);
 
-	const [videoWidth, setVideoWidth] = useState(960);
-	const [videoHeight, setVideoHeight] = useState(640);
+	const [videoWidth, setVideoWidth] = useState(0);
+	const [videoHeight, setVideoHeight] = useState(0);
 
 	const [tempScore, setTempScore] = useState(0);
 	const [score, setScore] = useState(0);
@@ -109,13 +109,10 @@ const Home = () => {
 		facingMode: 'environment',
 	};
 
-	const startDetecting = async () => {
-		setStopDetecting(false);
-		predictionFunction();
-	};
+	let predictionTimeout: NodeJS.Timeout;
 
 	async function predictionFunction() {
-		if (stopDetecting) return;
+		if (!isDetecting) return;
 		try {
 			let imageSrc;
 			if (webcamRef.current) {
@@ -132,14 +129,10 @@ const Home = () => {
 			console.log(error);
 		}
 
-		setTimeout(() => predictionFunction(), 150);
+		predictionTimeout = setTimeout(() => predictionFunction(), 150);
 	}
 
 	function drawBoundingBoxes(predictions: any) {
-		// const cnvs = document.querySelector(
-		// 	'#video-container > #myCanvas'
-		// ) as HTMLCanvasElement;
-
 		let cnvs;
 		if (canvasRef.current) {
 			cnvs = canvasRef.current;
@@ -171,7 +164,6 @@ const Home = () => {
 			predictionsArray.push(predictionObject);
 
 			const color = cardObjects[+name].color;
-			const points = cardObjects[+name].points;
 			name = cardObjects[+name].name;
 
 			// Draw bounding box
@@ -195,36 +187,40 @@ const Home = () => {
 	};
 
 	useEffect(() => {
-		if (videoWidth === window.innerWidth) return;
-		const handleResize = () => {
+		if (isDetecting) {
+			predictionFunction();
+		} else {
+			clearTimeout(predictionTimeout);
+		}
+	}, [isDetecting]);
+
+	useEffect(() => {
+		if (typeof window !== 'undefined') {
 			setVideoWidth(window.innerWidth);
 			setVideoHeight(window.innerHeight);
-		};
-
-		window.addEventListener('resize', handleResize);
-
-		return () => window.removeEventListener('resize', handleResize);
+		}
 	}, []);
 
 	return (
-		<main>
-			<div className="h-fit w-fit flex gap-4">
+		<main className="flex flex-col gap-4">
+			<div className="h-fit w-fit flex gap-4 pt-4 pl-4">
 				<button
-					className="bg-white text-black"
-					onClick={() => startDetecting()}
+					className="bg-green500 text-black p-4"
+					onClick={() => setIsDetecting(true)}
 				>
-					Start detection
+					Start detecting
 				</button>
 				<button
-					className="bg-white text-black"
-					onClick={() => setStopDetecting(true)}
+					className="bg-error text-black p-4"
+					onClick={() => setIsDetecting(false)}
 				>
-					Stop detection
+					Stop detecting
 				</button>
+				{isDetecting && <p>Detecting...</p>}
 			</div>
 			<div className="flex h-screen w-full flex-col lg:flex-row items-center lg:items-start lg:justify-between gap-4">
 				<div className="w-fit h-fit">
-					<div className="absolute top-6 left-0 z-50 w-fit h-fit">
+					<div className="absolute top-[96px] left-0 z-50 w-fit h-fit">
 						<canvas
 							ref={canvasRef}
 							id="myCanvas"
