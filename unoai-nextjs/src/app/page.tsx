@@ -183,7 +183,8 @@ const Home = () => {
 	}
 
 	const addToFinalScore = () => {
-		setScore(score + tempScore);
+		let newScore = score + tempScore;
+		setScore(newScore);
 	};
 
 	useEffect(() => {
@@ -231,7 +232,7 @@ const Home = () => {
 			</div>
 			<div className="flex h-screen w-full flex-col lg:flex-row items-center lg:items-start lg:justify-between gap-4">
 				<div className="w-fit h-fit">
-					<div className="absolute top-[96px] left-0 z-50 w-fit h-fit">
+					<div className="absolute top-[90px] left-0 z-50 w-fit h-fit">
 						<canvas
 							ref={canvasRef}
 							id="myCanvas"
@@ -251,36 +252,38 @@ const Home = () => {
 						/>
 					</div>
 				</div>
-				<div className="w-full lg:w-[400px] px-4 h-fit flex flex-col gap-4 lg:px-10">
-					{isDetecting && (
-						<p className="bg-green500 text-black p-4 rounded-md text-lg">
-							Detecting...
-						</p>
-					)}
-					<h1 className="text-xl">
-						Score: <span className="font-bold">{score}</span>
-					</h1>
-					{predictions.map((prediction, index) => (
-						<div
-							key={index}
-							className="flex justify-between bg-black text-white p-4"
-						>
-							<p>{prediction?.name}</p>
-							<p>
-								Points: <span>{prediction?.points}</span>
+				<div className="relative top-0 left-0 right-0 w-fit h-fit z-50">
+					<div className="w-full lg:w-[400px] px-4 h-fit flex flex-col gap-4 lg:px-10">
+						{isDetecting && (
+							<p className="bg-green500 text-black p-4 rounded-md text-lg">
+								Detecting...
 							</p>
+						)}
+						<h1 className="text-xl">
+							Score: <span className="font-bold">{score}</span>
+						</h1>
+						{predictions.map((prediction, index) => (
+							<div
+								key={index}
+								className="flex justify-between bg-black text-white p-4"
+							>
+								<p>{prediction?.name}</p>
+								<p>
+									Points: <span>{prediction?.points}</span>
+								</p>
+							</div>
+						))}
+						<div className="flex justify-between items-center">
+							<h2 className="text-xl">
+								Current Score: <span className="font-bold">{tempScore}</span>
+							</h2>
+							<button
+								className="text-lg text-white bg-black px-4 py-2 rounded-md"
+								onClick={() => addToFinalScore()}
+							>
+								Add
+							</button>
 						</div>
-					))}
-					<div className="flex justify-between items-center">
-						<h2 className="text-xl">
-							Current Score: <span className="font-bold">{tempScore}</span>
-						</h2>
-						<button
-							className="text-lg text-white bg-black px-4 py-2 rounded-md"
-							onClick={() => addToFinalScore()}
-						>
-							Add
-						</button>
 					</div>
 				</div>
 			</div>
