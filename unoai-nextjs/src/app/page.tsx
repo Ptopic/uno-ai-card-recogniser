@@ -17,8 +17,8 @@ const Home = () => {
 
 	const [isDetecting, setIsDetecting] = useState(false);
 
-	const [videoWidth, setVideoWidth] = useState(window.innerWidth);
-	const [videoHeight, setVideoHeight] = useState(window.innerHeight);
+	const [videoWidth, setVideoWidth] = useState(0);
+	const [videoHeight, setVideoHeight] = useState(0);
 
 	const [tempScore, setTempScore] = useState(0);
 	const [score, setScore] = useState(0);
@@ -104,8 +104,8 @@ const Home = () => {
 	];
 
 	const videoConstraints = {
-		height: videoHeight,
 		width: videoWidth,
+		height: videoHeight,
 		facingMode: 'environment',
 	};
 
@@ -196,8 +196,20 @@ const Home = () => {
 
 	useEffect(() => {
 		if (typeof window !== 'undefined') {
-			setVideoWidth(window.innerWidth);
-			setVideoHeight(window.innerHeight);
+			const width = window.innerWidth;
+			const height = window.innerHeight;
+			setVideoWidth(width);
+			setVideoHeight(height);
+
+			if (canvasRef.current) {
+				canvasRef.current.width = width;
+				canvasRef.current.height = height;
+			}
+
+			if (webcamRef.current && webcamRef.current.video) {
+				webcamRef.current.video.width = width;
+				webcamRef.current.video.height = height;
+			}
 		}
 	}, []);
 
